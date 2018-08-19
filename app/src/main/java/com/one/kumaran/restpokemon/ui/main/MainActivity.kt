@@ -15,10 +15,10 @@ import com.one.kumaran.restpokemon.repository.state.MainState
 import com.one.kumaran.restpokemon.ui.detail.DetailActivity
 
 import kotlinx.android.synthetic.main.activity_main.*
+import timber.log.Timber
 
 class MainActivity : AppCompatActivity(), MainView {
 
-    private lateinit var recyclerView: RecyclerView
     private lateinit var progressLayout: LinearLayout
     private lateinit var mainAdapter: MainAdapter
     lateinit var presenter: MainPresenterContract
@@ -67,9 +67,10 @@ class MainActivity : AppCompatActivity(), MainView {
         updateProgress(mainState)
     }
 
-    override fun showError(mainState: MainState) {
+    override fun errorOccured (error: Throwable, mainState: MainState) {
+        Timber.e(error)
         updateProgress(mainState)
-        //TODO: Error to be shown to the User
+        //TODO: Error handling
     }
 
     private fun updateProgress(mainState: MainState) {
@@ -79,7 +80,7 @@ class MainActivity : AppCompatActivity(), MainView {
     }
 
     private fun setUpUi() {
-        recyclerView = findViewById(R.id.recylerPokeList)
+        val recyclerView: RecyclerView = findViewById(R.id.recylerPokeList)
         progressLayout = findViewById(R.id.loadMoreLayout)
         recyclerView.layoutManager = LinearLayoutManager(this)
         mainAdapter = MainAdapter(clickListener(), loadMoreListener(), recyclerView)

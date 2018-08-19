@@ -7,6 +7,6 @@ import com.one.kumaran.restpokemon.ui.View
 interface MainView: View {
     fun populateData(mainState: MainState, pokemon: Pokemon)
     fun showLoading(mainState: MainState)
-    fun showError(mainState: MainState)
+    fun errorOccured(error: Throwable, mainState: MainState)
     fun dataLoadCompleted(mainState: MainState)
 }

@@ -6,7 +6,9 @@ import com.one.kumaran.restpokemon.ui.Presenter
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
-import timber.log.Timber
+
+const val LIMIT = 20
+const val INITIAL_OFFSET = 0
 
 class MainPresenter : MainPresenterContract {
     lateinit var mainState: MainState
@@ -15,7 +17,7 @@ class MainPresenter : MainPresenterContract {
 
     override fun attach(view: MainView) {
         mainView = view
-        mainState = MainState(20, 0, true)
+        mainState = MainState(LIMIT, INITIAL_OFFSET, true)
         mainView.showLoading(mainState)
         retrieveData(mainState.apply { isLoading = true })
     }
@@ -34,11 +36,8 @@ class MainPresenter : MainPresenterContract {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         { pokemon -> mainView.populateData(mainState, pokemon) },
-                        { e -> Timber.e(e)
-                            mainState.isLoading = false
-                            mainView.showError(mainState) },
-                        { mainState.isLoading = false
-                            mainView.showError(mainState) }))
+                        { e -> mainView.errorOccured(e, mainState.apply { isLoading = false }) },
+                        { mainView.dataLoadCompleted(mainState.apply { isLoading = false }) }))
     }
 }
 
